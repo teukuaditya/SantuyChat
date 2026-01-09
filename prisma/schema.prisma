@@ -5,8 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -22,6 +21,7 @@ enum RoleType {
 
 model Role {
   id String @id @default(uuid()) @db.Char(36)
+  role RoleType @unique
 
   users User[]
   room_member_roles RoomMember[]
