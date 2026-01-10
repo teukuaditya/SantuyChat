@@ -50,10 +50,9 @@ export const signIn = async (req: Request, res: Response, next: NextFunction) =>
         (err) => `${err.path.join(".")} - ${err.message}`
       );
 
-      return res.status(400).json({
+      return res.status(500).json({
         success: false,
-        message: "Validation Error",
-        detail: errorMessages,
+        message: "Email not registered",
       });
     }
 
