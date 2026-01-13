@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import type { RoleType } from "@prisma/client";
 import { SignInValues } from "../utils/schema/user";
+import mailtrap from "../utils/mailtrap";
 
 export const signUp = async (data: SignUpValues, file: Express.Multer.File) => {
 
@@ -52,3 +53,22 @@ export const signIn = async (data: SignInValues) => {
 
 }
 
+export const getEmailReset = async (email: string) => {
+    const data = await userRepositories.createPasswordReset(email);
+
+    await mailtrap.send({
+        from: {
+            email: "aditya@test.com",
+            name: "aditya"
+        },
+        to: [
+            {
+                email: email,
+            }
+        ],
+        subject: "Password Reset",
+        text: `Use this token to reset your password: ${data.token}`, // link ke halaman frontend untuk reset password
+    })
+
+    return true;
+}

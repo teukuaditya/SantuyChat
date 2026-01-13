@@ -1,6 +1,7 @@
 import prisma from "../utils/prisma";
 import type { RoleType } from "@prisma/client";
 import type { SignUpValues } from "../utils/schema/user";
+import crypto from "node:crypto";
 
 export const isEmailExist = async (email: string) => {
   return prisma.user.count({ where: { email } });
@@ -18,7 +19,8 @@ export const createUser = async (
   roleType: RoleType = "USER"
 ) => {
   const role = await findRole(roleType);
-  if (!role) throw new Error(`Role ${roleType} belum ada. Jalankan seed roles.`);
+  if (!role)
+    throw new Error(`Role ${roleType} belum ada. Jalankan seed roles.`);
 
   return prisma.user.create({
     data: {
@@ -33,8 +35,20 @@ export const createUser = async (
 
 export const findUserByEmail = async (email: string) => {
   return await prisma.user.findFirstOrThrow({
-    where: { 
-      email: email
+    where: {
+      email: email,
     },
   });
 };
+
+export const createPasswordReset = async ( email : string) => {
+  const user = await findUserByEmail(email);
+  const token = crypto.randomBytes(32).toString("hex");
+
+  return await prisma.passwordReset.create({
+    data: {
+      user_id: user.id,
+      token,
+    }
+  })
+}
