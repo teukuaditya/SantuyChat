@@ -1,5 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import { signUpSchema, signInSchema } from "../utils/schema/user";
+import {
+  signUpSchema,
+  signInSchema,
+  resetPasswordSchema,
+} from "../utils/schema/user";
 import fs from "fs";
 import * as userService from "../services/userService";
 import { z } from "zod";
@@ -106,6 +110,39 @@ export const getEmailReset = async (
     return res.status(200).json({
       success: true,
       message: "Reset link sent to your email",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updatePassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const parse = resetPasswordSchema.safeParse(req.body);
+
+    if (!parse.success) {
+      const errorMessages = parse.error.issues.map(
+        (err) => `${err.path.join(".")} - ${err.message}`
+      );
+
+      return res.status(400).json({
+        success: false,
+        message: "Validation Error",
+        detail: errorMessages,
+      });
+    }
+
+    const { tokenId } = req.params;
+
+    await userService.updatePassword(parse.data, tokenId);
+
+    return res.json({
+      success: true,
+      message: "Reset password successfully",
     });
   } catch (error) {
     next(error);
