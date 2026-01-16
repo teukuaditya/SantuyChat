@@ -54,21 +54,24 @@ export const signIn = async (data: SignInValues) => {
 }
 
 export const getEmailReset = async (email: string) => {
-    const data = await userRepositories.createPasswordReset(email);
+  const data = await userRepositories.createPasswordReset(email);
 
+  // kalau email tidak ditemukan, jangan bocorin
+  if (!data) return true;
+
+  try {
     await mailtrap.send({
-        from: {
-            email: "aditya@test.com",
-            name: "aditya"
-        },
-        to: [
-            {
-                email: email,
-            }
-        ],
-        subject: "Password Reset",
-        text: `Use this token to reset your password: ${data.token}`, // link ke halaman frontend untuk reset password
-    })
+      from: { email: "aditya@test.com", name: "aditya" },
+      to: [{ email }],
+      subject: "Password Reset",
+      text: `Use this token to reset your password: ${data.token}`,
+    });
+  } catch (err) {
+    // LOG untuk debugging
+    console.error("Mailtrap send failed:", err);
+    // lempar error yang jelas
+    throw new Error("Failed to send reset email");
+  }
 
-    return true;
-}
+  return true;
+};
