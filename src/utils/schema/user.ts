@@ -12,5 +12,14 @@ export const signInSchema = signUpSchema.pick({
     password: true,
 });
 
+export const resetPasswordSchema = z.object({
+    password: z.string(),
+    confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+});
+
 export type SignInValues = z.infer<typeof signInSchema>;
 export type SignUpValues = z.infer<typeof signUpSchema>;
+export type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
