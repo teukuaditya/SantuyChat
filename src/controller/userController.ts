@@ -148,3 +148,4 @@ export const updatePassword = async (
     next(error);
   }
 };
+

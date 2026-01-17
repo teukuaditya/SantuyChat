@@ -21,3 +21,4 @@ export default function errorHandler(
         message: errorCatch?.message ?? 'Something went wrong'
     })
 }
+
