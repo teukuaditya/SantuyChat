@@ -3,6 +3,15 @@ import type { RoleType } from "@prisma/client";
 import type { SignUpValues } from "../utils/schema/user";
 import crypto from "node:crypto";
 
+export const getUserById = async (id: string) => {
+  return prisma.user.findFirstOrThrow({
+    where: { id },
+    include: {
+      role: true,
+    }
+  });
+}
+
 export const isEmailExist = async (email: string) => {
   return prisma.user.count({ where: { email } });
 };
